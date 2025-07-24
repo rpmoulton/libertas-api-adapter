@@ -17,7 +17,7 @@ export default class Webhooks {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        return axios.post(`${baseUrl}/stipulations`, options, {
+        return axios.post(`${baseUrl}/webhooks`, options, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }
@@ -30,7 +30,7 @@ export default class Webhooks {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        return axios.post(`${baseUrl}/stipulations`, options, {
+        return axios.post(`${baseUrl}/webhook/simulate`, options, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }

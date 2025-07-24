@@ -36,7 +36,7 @@ const getResult = async (argv) => {
         case "getStipulationTypes": 
             return libertasClient.getStipulationTypes();
         case "registerWebhook": 
-            return libertasClient.registerWebhook({type: argv.type});
+            return libertasClient.registerWebhook({type: argv.type, url: argv.url});
         case "simulateWebhook": 
             return libertasClient.simulateWebhook();
         case "getIndustries": 
