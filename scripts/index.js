@@ -5,6 +5,7 @@ const argv = yargs(hideBin(process.argv)).parse();
 import libertasSDK from '../index.js';
 import {
     createDealData,
+    createStipData,
 } from './test-data.js';
 
 const getResult = async (argv) => {
@@ -26,7 +27,7 @@ const getResult = async (argv) => {
         case "getFundedDeals":
             return libertasClient.getFundedDeals();        
         case "createStipulation":
-            return libertasClient.createStipulation({deal_id: argv.deal_id});        
+            return libertasClient.createStipulation({deal_id: argv.deal_id, ...createStipData});        
         case "deleteStipulation":
             return libertasClient.deleteStipulation({deal_id: argv.deal_id, stipulation_id: argv.stipulation_id});        
         case "getAllStipulations":
@@ -38,7 +39,7 @@ const getResult = async (argv) => {
         case "registerWebhook": 
             return libertasClient.registerWebhook({type: argv.type, url: argv.url});
         case "simulateWebhook": 
-            return libertasClient.simulateWebhook();
+            return libertasClient.simulateWebhook({deal_id: argv.deal_id, type: argv.type});
         case "getIndustries": 
             return libertasClient.getIndustries();
         case "getOffers": 

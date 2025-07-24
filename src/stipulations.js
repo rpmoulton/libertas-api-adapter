@@ -4,6 +4,7 @@ import {
     sandboxUrl,
     productionUrl,
 } from './config.js';
+import FormData from 'form-data';
 
 export default class Stips {
     constructor(options) {
@@ -12,14 +13,19 @@ export default class Stips {
     }
 
     async createStipulation(options) {
+        const formData = new FormData();
+        for (const index of Object.keys(options)) {
+            formData.append(index, options[index]);
+        }
         let baseUrl = sandboxUrl;
         if (this.environment === 'production') {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        return axios.post(`${baseUrl}/deals/${options.deal_id}/stipulations`, options, {
+        return axios.post(`${baseUrl}/deals/${options.deal_id}/stipulations`, formData, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
+                'Content-Type': 'multipart/form-data',
             }
         });
     }

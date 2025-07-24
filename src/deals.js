@@ -4,6 +4,7 @@ import {
     sandboxUrl,
     productionUrl,
 } from './config.js';
+import FormData from 'form-data';
 
 export default class Deals {
     constructor(options) {
@@ -25,6 +26,7 @@ export default class Deals {
         return axios.post(`${baseUrl}/deals`, formData, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
+                'Content-Type': 'multipart/form-data',
             }
         });
     }

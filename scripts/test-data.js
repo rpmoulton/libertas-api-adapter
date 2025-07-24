@@ -1,3 +1,13 @@
+import fs from 'fs';
+const bankStatmentFile = fs.createReadStream('./bank_statement_1.pdf');
+
+export const createStipData = {
+    file: bankStatmentFile,
+    file_name: 'bank_statement_1.pdf',
+    file_type: 'application/pdf',
+    stipulation_type_id: '1',
+};
+
 export const createDealData = {
     name_legal: 'Music Stores In Space',
     business_street_1: '72 N 12 W',
@@ -49,5 +59,9 @@ export const createDealData = {
     owner_3_phone: '9098881234',
     owner_3_email: 'kelsey@test.com',
     amount_requested: 100000,
-    use_of_funds: 'Buying more banjos'
-}
+    use_of_funds: 'Buying more banjos',
+    file_1: bankStatmentFile,
+    file_1_name: 'bank_statement_1.pdf',
+    file_1_type: 'application/pdf',
+    file_1_stipulation_type_id: '1',
+};
