@@ -1,5 +1,5 @@
 import fs from 'fs';
-const bankStatmentFile = fs.createReadStream('./bank_statement_1.pdf');
+const bankStatmentFile = fs.createReadStream('./scripts/bank_statement_1.pdf');
 
 export const createStipData = {
     file: bankStatmentFile,
