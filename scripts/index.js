@@ -54,7 +54,7 @@ try {
         throw new Error('endpoint required for testing.');
     }
     const result = await getResult(argv);
-    console.log(result);
+    console.log(result.data);
 } catch (e) {
     console.log(e);
 }
