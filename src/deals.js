@@ -84,7 +84,7 @@ export default class Deals {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        return axios.post(`${baseUrl}/deals/${options.deal_id}/status`, {
+        return axios.get(`${baseUrl}/deals/${options.deal_id}/status`, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }

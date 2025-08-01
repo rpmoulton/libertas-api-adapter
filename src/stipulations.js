@@ -36,7 +36,7 @@ export default class Stips {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        return axios.delete(`${baseUrl}/deals/${options.deal_id}/stipulations/${stipulation_id}`, options, {
+        return axios.delete(`${baseUrl}/deals/${options.deal_id}/stipulations/${options.stipulation_id}`, options, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }
