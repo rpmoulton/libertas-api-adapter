@@ -9,7 +9,7 @@ A Node.js SDK for the [Libertas Funding Public API](https://api.libertasfms.com/
 
 ## Installation
 
-*When this is completely finished I'll publish it to npm.*
+https://www.npmjs.com/package/libertas-api-sdk
 
 ```sh
 npm install libertas-api-sdk
