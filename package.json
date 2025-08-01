@@ -1,6 +1,6 @@
 {
   "name": "libertas-api-sdk",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A tool to submit libertas deals.",
   "main": "index.js",
   "type": "module",
