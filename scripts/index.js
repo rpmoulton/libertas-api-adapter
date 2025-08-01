@@ -10,7 +10,7 @@ import {
 
 const getResult = async (argv) => {
     const libertasClient = new libertasSDK({
-        token: 'TEST-TEST-TEST-TEST-TEST-TEST',
+        token: 'ZRTL-XHAB-HIXT-TLRQ-MANO-OTLL',
         environment: 'sandbox',
     });
     switch (argv.endpoint) {
@@ -54,7 +54,7 @@ try {
         throw new Error('endpoint required for testing.');
     }
     const result = await getResult(argv);
-    console.log(result.data);
+    console.log(result?.data);
 } catch (e) {
     console.log(e);
 }

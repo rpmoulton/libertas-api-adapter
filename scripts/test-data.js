@@ -16,7 +16,7 @@ export const createDealData = {
     business_state: 'NY',
     business_zip_code: '10023',
     business_phone: '8887776666',
-    business_industry_type: 'Retail',
+    business_industry_type: 22112, // five code
     business_start_date: '2005-12-25',
     business_date_aquired: '2005-08-15',
     entity_type: 'CORPORATION',

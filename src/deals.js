@@ -26,7 +26,7 @@ export default class Deals {
         return axios.post(`${baseUrl}/deals`, formData, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
-                'Content-Type': 'multipart/form-data',
+                ...formData.getHeaders(),
             }
         });
     }
@@ -58,7 +58,7 @@ export default class Deals {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        return axios.get(`${baseUrl}/deals/${options.deal_id}/show`, {
+        return axios.get(`${baseUrl}/deals/${options.deal_id}`, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }
