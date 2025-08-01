@@ -18,9 +18,9 @@ export default class Auth {
             baseUrl = productionUrl;
         }
         const authResult = await axios.get(`${baseUrl}/auth?api_key=${this.token}`);
-        if (authResult.data.token) {
-            this.session = authResult.data.token;
-            return authResult.data.token;
+        if (authResult.data?.data?.token) {
+            this.session = authResult.data?.data?.token;
+            return authResult.data?.data?.token;
         }
         return authResult;
     }
