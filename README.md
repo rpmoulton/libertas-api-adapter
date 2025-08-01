@@ -221,7 +221,7 @@ const stipulationTypes = await libertasClient.getStipulationTypes();
 ### Stipulations
 
 ```javascript
-const fileStream = fs.getReadStream('some_file_to_upload.txt');
+const fileStream = fs.createReadStream('bank_statement_1.pdf');
 
 const result = await libertasClient.createStipulation({
   deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
