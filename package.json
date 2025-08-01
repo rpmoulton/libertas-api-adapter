@@ -13,6 +13,10 @@
     "fs": "^0.0.1-security",
     "yargs": "18.0.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rpmoulton/libertas-api-sdk.git"
+  },
   "author": "Ryan Moulton",
   "license": "ISC"
 }

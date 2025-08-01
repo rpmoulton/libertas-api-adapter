@@ -17,7 +17,7 @@ export default class Offers {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        return axios.get(`${baseUrl}/offers`, options, {
+        return axios.get(`${baseUrl}/deals/${options.deal_id}/offers`, options, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }
@@ -29,7 +29,7 @@ export default class Offers {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        return axios.post(`${baseUrl}/offers`, options, {
+        return axios.post(`${baseUrl}/deals/${options.deal_id}/offers`, options, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }
