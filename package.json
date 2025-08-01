@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rpmoulton/libertas-api-sdk.git"
+    "url": "https://github.com/rpmoulton/libertas-api-adapter.git"
   },
   "author": "Ryan Moulton",
   "license": "ISC"
