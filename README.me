@@ -1,3 +1,4 @@
+
 # Libertas API SDK
 
 A Node.js SDK for the [Libertas Funding Public API](https://api.libertasfms.com/api/public/v2/docs/index.html).
@@ -8,18 +9,21 @@ A Node.js SDK for the [Libertas Funding Public API](https://api.libertasfms.com/
 
 ## Installation
 
- - When this is completely finished i'll put it on npm using the following to make it easy for use. -
+*When this is completely finished I'll publish it to npm.*
+
 ```sh
 npm install libertas-api-sdk
 ```
 
-## Example usage:
-I made a cli script for testing in the scripts folder. This can be run using:
-```
-  node ./scripts/index.js --endpoint=listDeals
-```
-it also shows sample usage of the connector.
+## Example usage
 
+I made a CLI script for testing in the `scripts` folder. This can be run using:
+
+```sh
+node ./scripts/index.js --endpoint=listDeals
+```
+
+It also shows sample usage of the connector.
 
 ## Authentication
 
@@ -30,14 +34,13 @@ import libertasSDK from 'libertas-api-sdk';
 
 const libertasClient = new libertasSDK({
     token: "YOUR_MASTER_TOKEN",
-    environment: "production", //or sandbox
+    environment: "production", // or "sandbox"
 });
 ```
-Note: initializing the client will automatically pull the session token and use this session token as a 
-Bearer token in the `Authorization` header for all subsequent requests.
+
+*Note: initializing the client will automatically pull the session token and use it as a Bearer token in the `Authorization` header for all requests.*
 
 ---
-
 
 ## API Endpoints
 
@@ -47,63 +50,63 @@ Bearer token in the `Authorization` header for all subsequent requests.
 
 ```javascript
 const result = await libertasClient.createDeal({
-    name_legal: 'Music Stores In Space',
-    business_street_1: '72 N 12 W',
-    business_street_2: '',
-    business_city: 'New York',
-    business_state: 'NY',
-    business_zip_code: '10023',
-    business_phone: '888-777-666',
-    business_industry_type: 'Retail',
-    business_start_date: '2005-12-25',
-    business_date_aquired: '2005-08-15',
-    entity_type: 'Corporation',
-    fein: '12-1231234',
-    notes: 'Needs a decision within three days',
-    first_name: 'Fred',
-    last_name: 'Flintstone',
-    owner_1_street_1: '123 Kitty cat trail',
-    owner_1_street_2: '',
-    owner_1_city: 'Centennial',
-    owner_1_state: 'CO',
-    owner_1_zip_code: '80016',
-    owner_1_ssn: '123-12-1234',
-    owner_1_dob: '2000-12-13',
-    owner_1_percent_ownership: '33',
-    owner_1_phone: '123-321-1234',
-    owner_1_email: 'fred@test.com',
-    owner_2_first_name: 'George',
-    owner_2_last_name: 'Stevenson',
-    owner_2_street_1: '777 S Main St',
-    owner_2_street_2: '',
-    owner_2_city: 'Halfmoon',
-    owner_2_state: 'NY',
-    owner_2_zip_code: '12065',
-    owner_2_ssn: '999-99-9999',
-    owner_2_dob: '1955-11-17',
-    owner_2_percent_ownership: '33',
-    owner_2_phone: '555-555-5555',
-    owner_2_email: 'george@test.com',
-    owner_3_first_name: 'Kelsey',
-    owner_3_last_name: 'MacKenzie',
-    owner_3_street_1: '1243 E Graham Ave',
-    owner_3_street_2: '',
-    owner_3_city: 'Greenwich',
-    owner_3_state: 'CT',
-    owner_3_zip_code: '06807',
-    owner_3_ssn: '444-44-3333',
-    owner_3_dob: '1985-02-22',
-    owner_3_percent_ownership: '33',
-    owner_3_phone: '909-888-1234',
-    owner_3_email: 'kelsey@test.com',
-    amount_requested: 100000,
-    use_of_funds: 'Buying more banjos',
-    file_1: @test/data/bank_statement_1.pdf,
-    file_1_name: 'bank_statement_1.pdf',
-    file_1_type: 'application/pdf',
-    file_1_stipulation_type_id: '1',
-    state_of_organization: CA,
-    product_type: rbf,
+  name_legal: 'Music Stores In Space',
+  business_street_1: '72 N 12 W',
+  business_street_2: '',
+  business_city: 'New York',
+  business_state: 'NY',
+  business_zip_code: '10023',
+  business_phone: '888-777-666',
+  business_industry_type: 'Retail',
+  business_start_date: '2005-12-25',
+  business_date_aquired: '2005-08-15',
+  entity_type: 'Corporation',
+  fein: '12-1231234',
+  notes: 'Needs a decision within three days',
+  first_name: 'Fred',
+  last_name: 'Flintstone',
+  owner_1_street_1: '123 Kitty cat trail',
+  owner_1_street_2: '',
+  owner_1_city: 'Centennial',
+  owner_1_state: 'CO',
+  owner_1_zip_code: '80016',
+  owner_1_ssn: '123-12-1234',
+  owner_1_dob: '2000-12-13',
+  owner_1_percent_ownership: '33',
+  owner_1_phone: '123-321-1234',
+  owner_1_email: 'fred@test.com',
+  owner_2_first_name: 'George',
+  owner_2_last_name: 'Stevenson',
+  owner_2_street_1: '777 S Main St',
+  owner_2_street_2: '',
+  owner_2_city: 'Halfmoon',
+  owner_2_state: 'NY',
+  owner_2_zip_code: '12065',
+  owner_2_ssn: '999-99-9999',
+  owner_2_dob: '1955-11-17',
+  owner_2_percent_ownership: '33',
+  owner_2_phone: '555-555-5555',
+  owner_2_email: 'george@test.com',
+  owner_3_first_name: 'Kelsey',
+  owner_3_last_name: 'MacKenzie',
+  owner_3_street_1: '1243 E Graham Ave',
+  owner_3_street_2: '',
+  owner_3_city: 'Greenwich',
+  owner_3_state: 'CT',
+  owner_3_zip_code: '06807',
+  owner_3_ssn: '444-44-3333',
+  owner_3_dob: '1985-02-22',
+  owner_3_percent_ownership: '33',
+  owner_3_phone: '909-888-1234',
+  owner_3_email: 'kelsey@test.com',
+  amount_requested: 100000,
+  use_of_funds: 'Buying more banjos',
+  file_1: '@test/data/bank_statement_1.pdf',
+  file_1_name: 'bank_statement_1.pdf',
+  file_1_type: 'application/pdf',
+  file_1_stipulation_type_id: '1',
+  state_of_organization: 'CA',
+  product_type: 'rbf',
 });
 ```
 
@@ -111,6 +114,7 @@ const result = await libertasClient.createDeal({
 See [API Docs](https://api.libertasfms.com/api/public/v2/docs/index.html#/Deals/post_api_public_v2_deals) for full list.
 
 **Response:**
+
 ```json
 {
   "deal_id": "56ba721d-a343-4282-9ea8-9b7fc8d6cef6"
@@ -121,13 +125,13 @@ See [API Docs](https://api.libertasfms.com/api/public/v2/docs/index.html#/Deals/
 
 ```javascript
 const currentDeals = await libertasClient.listDeals({
-    page: 1,
-    per_page: 200,
+  page: 1,
+  per_page: 200,
 });
-//optional parameters of page & per_page
 ```
 
 **Response:**
+
 ```json
 {
   "deals": [
@@ -150,7 +154,7 @@ const currentDeals = await libertasClient.listDeals({
 
 ```javascript
 const deal = await libertasClient.getDeal({
-    deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
+  deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
 });
 ```
 
@@ -158,7 +162,7 @@ const deal = await libertasClient.getDeal({
 
 ```javascript
 const rejectResult = await libertasClient.rejectDeal({
-    deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
+  deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
 });
 ```
 
@@ -166,7 +170,7 @@ const rejectResult = await libertasClient.rejectDeal({
 
 ```javascript
 const status = await libertasClient.getDealStatus({
-    deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
+  deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
 });
 ```
 
@@ -174,20 +178,16 @@ const status = await libertasClient.getDealStatus({
 
 ### Funded Deals
 
-#### List All Funded Deals
-
 ```javascript
 const funded = await libertasClient.getFundedDeals({
-    page: 1, //optional params
-    per_page: 200, //optional params
+  page: 1,
+  per_page: 200,
 });
 ```
 
 ---
 
 ### Industries
-
-#### List All Industries
 
 ```javascript
 const industries = await libertasClient.getIndustries();
@@ -197,28 +197,20 @@ const industries = await libertasClient.getIndustries();
 
 ### Offers
 
-#### List All Offers
-
 ```javascript
-const availableOffers = await libertasClient.getOffers({
-    deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
+const offers = await libertasClient.getOffers({
+  deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
 });
-```
 
-#### Accept an Offer
-
-```javascript
-const acceptResult = await libertasClient.acceptOffer({
-    deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
-    offer_id: '02ee8fce-6df1-41ba-9634-e6faae6c45b4',
+const accept = await libertasClient.acceptOffer({
+  deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
+  offer_id: '02ee8fce-6df1-41ba-9634-e6faae6c45b4',
 });
 ```
 
 ---
 
 ### Stipulation Types
-
-#### List All Stipulation Types
 
 ```javascript
 const stipulationTypes = await libertasClient.getStipulationTypes();
@@ -228,47 +220,33 @@ const stipulationTypes = await libertasClient.getStipulationTypes();
 
 ### Stipulations
 
-#### Create a Stipulation
-
 ```javascript
 const fileStream = fs.getReadStream('some_file_to_upload.txt');
-const stipulationResult = await libertasClient.createStipulation({
-    deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
-    file: fileStream,
-    file_name: 'bank_statement_1.pdf',
-    file_type: 'application/pdf',
-    stipulation_type_id: '1',
+
+const result = await libertasClient.createStipulation({
+  deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
+  file: fileStream,
+  file_name: 'bank_statement_1.pdf',
+  file_type: 'application/pdf',
+  stipulation_type_id: '1',
 });
-```
 
-#### Delete a Stipulation
-
-```javascript
-const deleteStipResult = await libertasClient.deleteStipulation({
-    deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
-    stipulation_id: '18f1db1e-585f-46fd-8891-d54221209db0',
+await libertasClient.deleteStipulation({
+  deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
+  stipulation_id: '18f1db1e-585f-46fd-8891-d54221209db0',
 });
-```
 
-#### List Stipulations
-
-```javascript
-const stipulations = await libertasClient.getAllStipulations({
-    deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
+const allStips = await libertasClient.getAllStipulations({
+  deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
 });
-```
 
-#### Update a Stipulation
-
-```javascript
-const fileStream = fs.getReadStream('some_file_to_upload.txt');
-const stipulationResult = await libertasClient.updateStipulation({
-    deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
-    stipulation_id: '18f1db1e-585f-46fd-8891-d54221209db0',
-    file: fileStream,
-    file_name: 'bank_statement_1.pdf',
-    file_type: 'application/pdf',
-    stipulation_type_id: '1',
+const updated = await libertasClient.updateStipulation({
+  deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
+  stipulation_id: '18f1db1e-585f-46fd-8891-d54221209db0',
+  file: fileStream,
+  file_name: 'bank_statement_1.pdf',
+  file_type: 'application/pdf',
+  stipulation_type_id: '1',
 });
 ```
 
@@ -276,29 +254,20 @@ const stipulationResult = await libertasClient.updateStipulation({
 
 ### Webhooks
 
-#### Register Webhooks
-
 ```javascript
-const registerWebhookResponse = await libertasClient.registerWebhook({
-    url: 'YOUR_URL',
-    type: 'WEBHOOK_TYPE_BEING_REGISTERED',
+await libertasClient.registerWebhook({
+  url: 'YOUR_URL',
+  type: 'WEBHOOK_TYPE_BEING_REGISTERED',
 });
-```
 
-#### Simulate Webhook Call (Sandbox only)
-
-```javascript
 await libertasClient.simulateWebhook({
-    type: 'status',
+  type: 'status',
 });
 ```
 
 ---
 
 ## Error Handling
-
-All endpoints return standard HTTP status codes.  
-Common error responses:
 
 ```json
 // 401 Unauthorized
@@ -325,4 +294,5 @@ Pull requests and issues are welcome!
 ---
 
 ## Reference
+
 See [API Docs](https://api.libertasfms.com/api/public/v2/docs/index.html)
