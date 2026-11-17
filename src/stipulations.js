@@ -1,4 +1,5 @@
-import axios from 'axios';
+import { pathSegment } from './security.js';
+import axios from './http.js';
 import Auth from './auth.js';
 import {
     sandboxUrl,
@@ -22,10 +23,10 @@ export default class Stips {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        return axios.post(`${baseUrl}/deals/${options.deal_id}/stipulations`, formData, {
+        return axios.post(`${baseUrl}/deals/${pathSegment(options.deal_id)}/stipulations`, formData, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
-                'Content-Type': 'multipart/form-data',
+                ...formData.getHeaders(),
             }
         });
     }
@@ -36,7 +37,7 @@ export default class Stips {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        return axios.delete(`${baseUrl}/deals/${options.deal_id}/stipulations/${options.stipulation_id}`, options, {
+        return axios.delete(`${baseUrl}/deals/${pathSegment(options.deal_id)}/stipulations/${pathSegment(options.stipulation_id)}`, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }
@@ -49,7 +50,7 @@ export default class Stips {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        return axios.get(`${baseUrl}/deals/${options.deal_id}/stipulations`, {
+        return axios.get(`${baseUrl}/deals/${pathSegment(options.deal_id)}/stipulations`, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }
@@ -62,7 +63,7 @@ export default class Stips {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        return axios.put(`${baseUrl}/deals/${options.deal_id}/stipulations/${options.stipulation_id}`, options, {
+        return axios.put(`${baseUrl}/deals/${pathSegment(options.deal_id)}/stipulations/${pathSegment(options.stipulation_id)}`, options, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }

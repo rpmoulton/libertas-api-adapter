@@ -1,4 +1,5 @@
-import axios from 'axios';
+import { pathSegment } from './security.js';
+import axios from './http.js';
 import Auth from './auth.js';
 import {
     sandboxUrl,
@@ -17,7 +18,7 @@ export default class Offers {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        return axios.get(`${baseUrl}/deals/${options.deal_id}/offers`, options, {
+        return axios.get(`${baseUrl}/deals/${pathSegment(options.deal_id)}/offers`, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }
@@ -29,7 +30,7 @@ export default class Offers {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        return axios.post(`${baseUrl}/deals/${options.deal_id}/offers`, options, {
+        return axios.post(`${baseUrl}/deals/${pathSegment(options.deal_id)}/offers`, options, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }

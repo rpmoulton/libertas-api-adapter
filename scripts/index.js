@@ -9,8 +9,9 @@ import {
 } from './test-data.js';
 
 const getResult = async (argv) => {
+    if (!process.env.LIBERTAS_API_KEY) throw new Error('LIBERTAS_API_KEY is required');
     const libertasClient = new libertasSDK({
-        token: 'ZRTL-XHAB-HIXT-TLRQ-MANO-OTLL',
+        token: process.env.LIBERTAS_API_KEY,
         environment: 'sandbox',
     });
     switch (argv.endpoint) {
@@ -45,7 +46,9 @@ const getResult = async (argv) => {
         case "getOffers": 
             return libertasClient.getOffers({deal_id: argv.deal_id});
         case "acceptOffer": 
-            return libertasClient.acceptOffer({deal_id: argv.deal_id});
+            return libertasClient.acceptOffer({deal_id: argv.deal_id, offer_id: argv.offer_id});
+        default:
+            throw new Error('Unknown endpoint');
     }
 }
 
@@ -56,5 +59,6 @@ try {
     const result = await getResult(argv);
     console.log(result?.data);
 } catch (e) {
-    console.log(e);
+    console.error('Request failed:', e.response?.status ?? 'no response');
+    process.exitCode = 1;
 }

@@ -1,11 +1,11 @@
 
 # Libertas API SDK
 
-A Node.js SDK for the [Libertas Funding Public API](https://api.libertasfms.com/api/public/v2/docs/index.html).
+An ECMAScript module (ESM) SDK for the [Libertas Funding Public API](https://api.libertasfms.com/api/public/v2/docs/index.html).
 
 ## Requirements
 
-- Node.js v12.0.0 or higher
+- Node.js `^22.12.0` or `>=24.0.0`
 
 ## Installation
 
@@ -15,30 +15,35 @@ https://www.npmjs.com/package/libertas-api-sdk
 npm install libertas-api-sdk
 ```
 
-## Example usage
+## Quick start
 
-I made a CLI script for testing in the `scripts` folder. This can be run using:
-
-```sh
-node ./scripts/index.js --endpoint=listDeals
-```
-
-It also shows sample usage of the connector.
-
-## Authentication
-
-All requests require a session token. To obtain a session token, use your master API key:
+Set `LIBERTAS_API_KEY` in your environment, then create a client:
 
 ```javascript
-import libertasSDK from 'libertas-api-sdk';
+import LibertasClient from 'libertas-api-sdk';
 
-const libertasClient = new libertasSDK({
-    token: "YOUR_MASTER_TOKEN",
-    environment: "production", // or "sandbox"
+const libertasClient = new LibertasClient({
+  token: process.env.LIBERTAS_API_KEY,
+  environment: 'sandbox', // Use 'production' for live requests.
 });
+
+const response = await libertasClient.listDeals({ page: 1, per_page: 20 });
+console.log(response.data);
 ```
 
-*Note: initializing the client will automatically pull the session token and use it as a Bearer token in the `Authorization` header for all requests.*
+## Authentication and responses
+
+Supply your master API key as `token`. Authentication happens lazily on the first
+request, and each endpoint service caches its session token. The SDK sends that
+token in the `Authorization: Bearer ...` header. It does not automatically refresh
+expired sessions; create a new client if a session expires.
+
+Set `environment` explicitly to `'sandbox'` or `'production'`. An omitted or
+unrecognized value currently selects the sandbox.
+
+All endpoint methods return an Axios response. Read `response.data` for the API
+response body and `response.status` for the HTTP status. Requests time out after
+30 seconds, reject redirects, and are not automatically retried.
 
 ---
 
@@ -49,6 +54,8 @@ const libertasClient = new libertasSDK({
 #### Create a Deal
 
 ```javascript
+import { createReadStream } from 'node:fs';
+
 const result = await libertasClient.createDeal({
   name_legal: 'Music Stores In Space',
   business_street_1: '72 N 12 W',
@@ -57,10 +64,10 @@ const result = await libertasClient.createDeal({
   business_state: 'NY',
   business_zip_code: '10023',
   business_phone: '888-777-666',
-  business_industry_type: 22112, // five code
+  business_industry_type: 22112, // Industry code
   business_start_date: '2005-12-25',
   business_date_aquired: '2005-08-15',
-  entity_type: 'Corporation',
+  entity_type: 'CORPORATION',
   fein: '12-1231234',
   notes: 'Needs a decision within three days',
   first_name: 'Fred',
@@ -101,7 +108,7 @@ const result = await libertasClient.createDeal({
   owner_3_email: 'kelsey@test.com',
   amount_requested: 100000,
   use_of_funds: 'Buying more banjos',
-  file_1: '@test/data/bank_statement_1.pdf',
+  file_1: createReadStream('./bank_statement_1.pdf'),
   file_1_name: 'bank_statement_1.pdf',
   file_1_type: 'application/pdf',
   file_1_stipulation_type_id: '1',
@@ -179,10 +186,7 @@ const status = await libertasClient.getDealStatus({
 ### Funded Deals
 
 ```javascript
-const funded = await libertasClient.getFundedDeals({
-  page: 1,
-  per_page: 200,
-});
+const funded = await libertasClient.getFundedDeals();
 ```
 
 ---
@@ -221,7 +225,9 @@ const stipulationTypes = await libertasClient.getStipulationTypes();
 ### Stipulations
 
 ```javascript
-const fileStream = fs.createReadStream('bank_statement_1.pdf');
+import { createReadStream } from 'node:fs';
+
+const fileStream = createReadStream('./bank_statement_1.pdf');
 
 const result = await libertasClient.createStipulation({
   deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
@@ -240,17 +246,19 @@ const allStips = await libertasClient.getAllStipulations({
   deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
 });
 
+// updateStipulation sends a JSON body; consult the API reference for update fields.
 const updated = await libertasClient.updateStipulation({
   deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
   stipulation_id: '18f1db1e-585f-46fd-8891-d54221209db0',
-  file: fileStream,
-  file_name: 'bank_statement_1.pdf',
-  file_type: 'application/pdf',
   stipulation_type_id: '1',
 });
 ```
 
 ---
+
+For `createDeal` and `createStipulation`, pass a readable stream or Buffer for
+file fields. Strings are sent as literal form values, not opened as files. Create
+a fresh stream for each upload; consumed streams cannot be reused.
 
 ### Webhooks
 
@@ -267,32 +275,56 @@ await libertasClient.simulateWebhook({
 
 ---
 
-## Error Handling
+## Error handling
 
-```json
-// 401 Unauthorized
-{
-  "statusCode": 401,
-  "error": "Unauthorized",
-  "message": "Missing authentication"
-}
+Failed requests reject with an error. HTTP errors expose the status through
+`error.response?.status`; network failures and timeouts may have no response.
 
-// 400 Bad Request
-{
-  "statusCode": 400,
-  "error": "Bad Request",
-  "message": "Invalid request params input"
+```javascript
+try {
+  const response = await libertasClient.listDeals();
+  console.log(response.data);
+} catch (error) {
+  console.error('Libertas request failed:', error.response?.status ?? 'no response');
+  // Handle or propagate the failure as appropriate for your application.
 }
 ```
 
----
+## Development
+
+```sh
+npm ci
+npm test
+```
+
+The CLI runs against the sandbox and requires an API key. Run it from the
+repository root after installing development dependencies:
+
+```sh
+LIBERTAS_API_KEY=your_key node ./scripts/index.js --endpoint=listDeals
+```
+
+For methods that require identifiers, pass arguments such as `--deal_id=...`,
+`--stipulation_id=...`, or `--offer_id=...`. CLI calls can create or modify sandbox
+records. Review `scripts/index.js` and the sample payloads in `scripts/test-data.js`
+before using write operations.
 
 ## Contributing
 
-Pull requests and issues are welcome!
-
----
+Issues and pull requests are welcome. Include a description of the change and
+run `npm test` before submitting a pull request. Tests use mocked HTTP requests
+and do not require API credentials.
 
 ## Reference
 
-See [API Docs](https://api.libertasfms.com/api/public/v2/docs/index.html)
+See the [Libertas API documentation](https://api.libertasfms.com/api/public/v2/docs/index.html)
+for request fields and response schemas. The examples above show usage; API
+response bodies are returned unchanged.
+
+## License
+
+ISC (as declared in `package.json`).
+
+## Security
+
+Keep API keys in environment variables and avoid logging raw Axios errors or responses: they can contain credentials and financial data. If a key is exposed, revoke or rotate it; removing it from a file does not revoke copies in Git history. Authentication uses the API-required query parameter over HTTPS. Requests reject redirects to keep credentials and uploads on the configured API host.

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from './http.js';
 import Auth from './auth.js';
 import {
     sandboxUrl,

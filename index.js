@@ -56,7 +56,7 @@ export default class LibertasClient {
     }
 
     async acceptOffer(options) {
-        return await this.offers.acceptOfferoptions(options);
+        return await this.offers.acceptOffer(options);
     }
 
     async getStipulationTypes(options) {

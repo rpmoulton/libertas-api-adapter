@@ -1,4 +1,5 @@
-import axios from 'axios';
+import { pathSegment } from './security.js';
+import axios from './http.js';
 import Auth from './auth.js';
 import {
     sandboxUrl,
@@ -37,14 +38,8 @@ export default class Deals {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        let query='?'
-        if (options?.page) {
-            query += `page=${options.page}`;
-        }
-        if (options?.per_page) {
-            query += `per_page=${options.per_page}`;
-        }
-        const result = await axios.get(`${baseUrl}/deals${query}`, {
+        const result = await axios.get(`${baseUrl}/deals`, {
+            params: { page: options?.page, per_page: options?.per_page },
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }
@@ -58,7 +53,7 @@ export default class Deals {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        return axios.get(`${baseUrl}/deals/${options.deal_id}`, {
+        return axios.get(`${baseUrl}/deals/${pathSegment(options.deal_id)}`, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }
@@ -67,11 +62,11 @@ export default class Deals {
     }
     async rejectDeal(options) {
         let baseUrl = sandboxUrl;
-        if (options.environment === 'production') {
+        if (this.environment === 'production') {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        return axios.put(`${baseUrl}/deals/${options.deal_id}/reject`, options, {
+        return axios.put(`${baseUrl}/deals/${pathSegment(options.deal_id)}/reject`, options, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }
@@ -80,11 +75,11 @@ export default class Deals {
 
     async getDealStatus(options) {
         let baseUrl = sandboxUrl;
-        if (options.environment === 'production') {
+        if (this.environment === 'production') {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        return axios.get(`${baseUrl}/deals/${options.deal_id}/status`, {
+        return axios.get(`${baseUrl}/deals/${pathSegment(options.deal_id)}/status`, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }

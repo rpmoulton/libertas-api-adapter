@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from './http.js';
 import Auth from './auth.js';
 import {
     sandboxUrl,
@@ -13,11 +13,11 @@ export default class StipTypes {
 
     async getStipulationTypes(options) {
         let baseUrl = sandboxUrl;
-        if (options.environment === 'production') {
+        if (this.environment === 'production') {
             baseUrl = productionUrl;
         }
         const sessionToken = await this.auth.auth();
-        return axios.get(`${baseUrl}/stipulation_types`, options, {
+        return axios.get(`${baseUrl}/stipulation_types`, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }
