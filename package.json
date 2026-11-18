@@ -4,6 +4,16 @@
   "description": "A tool to submit libertas deals.",
   "main": "index.js",
   "type": "module",
+  "keywords": [
+    "libertas",
+    "libertas-funding",
+    "libertas-api",
+    "funding-api",
+    "nodejs",
+    "sdk",
+    "api-client",
+    "business-financing"
+  ],
   "scripts": {
     "start": "node index.js",
     "test": "node --test"
