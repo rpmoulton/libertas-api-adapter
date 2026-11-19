@@ -1,10 +1,6 @@
 import { pathSegment } from './security.js';
 import axios from './http.js';
 import Auth from './auth.js';
-import {
-    sandboxUrl,
-    productionUrl,
-} from './config.js';
 import FormData from 'form-data';
 
 export default class Deals {
@@ -12,6 +8,7 @@ export default class Deals {
         this.masterToken = options.token;
         this.environment = options.environment;
         this.auth = new Auth(options);
+        this.baseUrl = this.auth.baseUrl;
     }
 
     async createDeal(options) {
@@ -19,12 +16,8 @@ export default class Deals {
         for (const index of Object.keys(options)) {
             formData.append(index, options[index]);
         }
-        let baseUrl = sandboxUrl;
-        if (this.environment === 'production') {
-            baseUrl = productionUrl;
-        }
         const sessionToken = await this.auth.auth();
-        return axios.post(`${baseUrl}/deals`, formData, {
+        return axios.post(`${this.baseUrl}/deals`, formData, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
                 ...formData.getHeaders(),
@@ -33,12 +26,8 @@ export default class Deals {
     }
 
     async listDeals(options) {
-        let baseUrl = sandboxUrl;
-        if (this.environment === 'production') {
-            baseUrl = productionUrl;
-        }
         const sessionToken = await this.auth.auth();
-        const result = await axios.get(`${baseUrl}/deals`, {
+        const result = await axios.get(`${this.baseUrl}/deals`, {
             params: { page: options?.page, per_page: options?.per_page },
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
@@ -48,12 +37,8 @@ export default class Deals {
     }
 
     async getDeal(options) {
-        let baseUrl = sandboxUrl;
-        if (this.environment === 'production') {
-            baseUrl = productionUrl;
-        }
         const sessionToken = await this.auth.auth();
-        return axios.get(`${baseUrl}/deals/${pathSegment(options.deal_id)}`, {
+        return axios.get(`${this.baseUrl}/deals/${pathSegment(options.deal_id)}`, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }
@@ -61,12 +46,8 @@ export default class Deals {
 
     }
     async rejectDeal(options) {
-        let baseUrl = sandboxUrl;
-        if (this.environment === 'production') {
-            baseUrl = productionUrl;
-        }
         const sessionToken = await this.auth.auth();
-        return axios.put(`${baseUrl}/deals/${pathSegment(options.deal_id)}/reject`, options, {
+        return axios.put(`${this.baseUrl}/deals/${pathSegment(options.deal_id)}/reject`, options, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }
@@ -74,12 +55,8 @@ export default class Deals {
     }
 
     async getDealStatus(options) {
-        let baseUrl = sandboxUrl;
-        if (this.environment === 'production') {
-            baseUrl = productionUrl;
-        }
         const sessionToken = await this.auth.auth();
-        return axios.get(`${baseUrl}/deals/${pathSegment(options.deal_id)}/status`, {
+        return axios.get(`${this.baseUrl}/deals/${pathSegment(options.deal_id)}/status`, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }

@@ -1,22 +1,15 @@
 import axios from './http.js';
 import Auth from './auth.js';
-import {
-    sandboxUrl,
-    productionUrl,
-} from './config.js';
 
 export default class Industries {
     constructor(options) {
         this.environment = options.environment;
         this.auth = new Auth(options);
+        this.baseUrl = this.auth.baseUrl;
     }
     async getIndustries() {
-        let baseUrl = sandboxUrl;
-        if (this.environment === 'production') {
-            baseUrl = productionUrl;
-        }
         const sessionToken = await this.auth.auth();
-        return axios.get(`${baseUrl}/industries`, {
+        return axios.get(`${this.baseUrl}/industries`, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }

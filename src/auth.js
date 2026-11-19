@@ -1,13 +1,11 @@
 import axios from './http.js';
-import {
-    sandboxUrl,
-    productionUrl,
-} from './config.js';
+import { resolveBaseUrl } from './config.js';
 
 export default class Auth {
     constructor(options) {
         this.token = options.token;
         this.environment = options.environment;
+        this.baseUrl = resolveBaseUrl(options);
         this.session = undefined;
         this.pendingSession = undefined;
     }
@@ -25,14 +23,12 @@ export default class Auth {
     }
 
     async fetchSession() {
-        let baseUrl = sandboxUrl;
-        if (this.environment === 'production') {
-            baseUrl = productionUrl;
-        }
-        const authResult = await axios.get(`${baseUrl}/auth`, { params: { api_key: this.token } });
-        if (authResult.data?.data?.token) {
-            this.session = authResult.data?.data?.token;
-            return authResult.data?.data?.token;
+        const authResult = await axios.get(`${this.baseUrl}/auth`, { params: { api_key: this.token } });
+        const body = authResult.data;
+        const token = body?.data?.token ?? body?.token;
+        if (body?.success !== false && typeof token === 'string' && token.trim()) {
+            this.session = token;
+            return token;
         }
         throw new Error('Authentication response did not contain a session token');
     }

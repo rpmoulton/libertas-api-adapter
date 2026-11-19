@@ -1,23 +1,16 @@
 import axios from './http.js';
 import Auth from './auth.js';
-import {
-    sandboxUrl,
-    productionUrl,
-} from './config.js';
 
 export default class Webhooks {
     constructor(options) {
         this.environment = options.environment;
         this.auth = new Auth(options);
+        this.baseUrl = this.auth.baseUrl;
     }
     
     async registerWebhook(options) {
-        let baseUrl = sandboxUrl;
-        if (this.environment === 'production') {
-            baseUrl = productionUrl;
-        }
         const sessionToken = await this.auth.auth();
-        return axios.post(`${baseUrl}/webhooks`, options, {
+        return axios.post(`${this.baseUrl}/webhooks`, options, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }
@@ -25,12 +18,11 @@ export default class Webhooks {
     }
     
     async simulateWebhook(options) {
-        let baseUrl = sandboxUrl;
         if (this.environment === 'production') {
-            baseUrl = productionUrl;
+            throw new Error('Webhook simulation is available only in sandbox mode');
         }
         const sessionToken = await this.auth.auth();
-        return axios.post(`${baseUrl}/webhooks/simulate`, options, {
+        return axios.post(`${this.baseUrl}/webhooks/simulate`, options, {
             headers: {
                 Authorization: `Bearer ${sessionToken}`,
             }

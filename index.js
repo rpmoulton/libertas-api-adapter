@@ -67,6 +67,10 @@ export default class LibertasClient {
         return await this.stips.createStipulation(options);
     }
 
+    async createStipulationUploadUrl(options) {
+        return await this.stips.createStipulationUploadUrl(options);
+    }
+
     async deleteStipulation(options) {
         return await this.stips.deleteStipulation(options);
     }
