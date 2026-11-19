@@ -3,7 +3,7 @@ export const sandboxUrl = `https://sandbox.uat.libertasfms.com${apiPath}`;
 export const productionUrl = `https://api.libertasfms.com${apiPath}`;
 
 export function resolveBaseUrl(options) {
-    const host = options.host ?? globalThis.process?.env?.LIBERTAS_API_HOST;
+    const host = options.host === undefined ? globalThis.process?.env?.LIBERTAS_API_HOST : options.host;
     if (host === undefined) {
         return options.environment === 'production' ? productionUrl : sandboxUrl;
     }

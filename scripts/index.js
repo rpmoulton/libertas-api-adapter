@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-const argv = yargs(hideBin(process.argv)).parse();
+const argv = yargs(hideBin(process.argv))
+    .string(['deal_id', 'stipulation_id', 'offer_id', 'stipulation_type_id'])
+    .number(['page', 'per_page'])
+    .parse();
 import libertasSDK from '../index.js';
+import { sandboxUrl } from '../src/config.js';
 import {
     createDealData,
     createStipData,
@@ -13,10 +17,12 @@ const getResult = async (argv) => {
     const libertasClient = new libertasSDK({
         token: process.env.LIBERTAS_API_KEY,
         environment: 'sandbox',
+        host: new URL(sandboxUrl).origin,
     });
+    const pagination = { page: argv.page, per_page: argv.per_page };
     switch (argv.endpoint) {
         case "listDeals":
-            return libertasClient.listDeals();        
+            return libertasClient.listDeals(pagination);
         case "getDeal":
             return libertasClient.getDeal({deal_id: argv.deal_id});        
         case "createDeal":
@@ -26,15 +32,19 @@ const getResult = async (argv) => {
         case "getDealStatus":
             return libertasClient.getDealStatus({deal_id: argv.deal_id});        
         case "getFundedDeals":
-            return libertasClient.getFundedDeals();        
+            return libertasClient.getFundedDeals(pagination);
         case "createStipulation":
             return libertasClient.createStipulation({deal_id: argv.deal_id, ...createStipData});        
         case "deleteStipulation":
             return libertasClient.deleteStipulation({deal_id: argv.deal_id, stipulation_id: argv.stipulation_id});        
         case "getAllStipulations":
-            return libertasClient.getAllStipulations({deal_id: argv.deal_id});
+            return libertasClient.getAllStipulations({ deal_id: argv.deal_id, ...pagination });
         case "updateStipulation":
-            return libertasClient.updateStipulation({deal_id: argv.deal_id, stipulation_id: argv.stipulation_id});
+            return libertasClient.updateStipulation({
+                deal_id: argv.deal_id,
+                stipulation_id: argv.stipulation_id,
+                stipulation_type_id: argv.stipulation_type_id,
+            });
         case "getStipulationTypes": 
             return libertasClient.getStipulationTypes();
         case "registerWebhook": 

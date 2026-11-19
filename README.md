@@ -38,8 +38,26 @@ request, and each endpoint service caches its session token. The SDK sends that
 token in the `Authorization: Bearer ...` header. It does not automatically refresh
 expired sessions; create a new client if a session expires.
 
-Set `environment` explicitly to `'sandbox'` or `'production'`. An omitted or
-unrecognized value currently selects the sandbox.
+The sandbox returned a successful response with the session token at `data.token`.
+The SDK also accepts the top-level `token` shown in the vendor reference.
+Responses with `success: false` are treated as authentication failures.
+
+## Environment and host
+
+Set `environment: 'production'` for production mode. Omitted or unrecognized
+values select sandbox mode. An explicit `host` takes precedence over
+`LIBERTAS_API_HOST`, followed by the default origin for the selected mode:
+
+| Mode | Default origin |
+| --- | --- |
+| Sandbox | `https://sandbox.uat.libertasfms.com` |
+| Production | `https://api.libertasfms.com` |
+
+The production origin serves the [Libertas public API reference](https://api.libertasfms.com/api/public/v2/docs/index.html).
+The SDK appends `/api/public/v2` to origin overrides. Supply only the origin,
+for example `host: 'https://libertas-proxy.example'`. Overrides leave the mode
+unchanged. Only send credentials to origins you trust. Origins require HTTPS,
+with HTTP allowed for loopback development. Embedded credentials are rejected.
 
 All endpoint methods return an Axios response. Read `response.data` for the API
 response body and `response.status` for the HTTP status. Requests time out after
@@ -143,12 +161,15 @@ const currentDeals = await libertasClient.listDeals({
 {
   "deals": [
     {
-      "deal_id": "56ba721d-a343-4282-9ea8-9b7fc8d6cef6",
-      "name_dba": "Fluffy Inc",
-      "name_legal": "SomeName",
-      "status": "processing",
-      "last_state_ts": null,
-      "create_ts": "2017-08-15T14:36:56.000Z"
+      "success": true,
+      "data": {
+        "deal_id": "56ba721d-a343-4282-9ea8-9b7fc8d6cef6",
+        "name_dba": "Fluffy Inc",
+        "name_legal": "SomeName",
+        "status": "processing",
+        "last_state_ts": null,
+        "create_ts": "2017-08-15T14:36:56.000Z"
+      }
     }
   ],
   "total_count": 1,
@@ -186,8 +207,23 @@ const status = await libertasClient.getDealStatus({
 ### Funded Deals
 
 ```javascript
-const funded = await libertasClient.getFundedDeals();
+const { data: funded } = await libertasClient.getFundedDeals({
+  page: 1,
+  per_page: 20,
+});
+console.log(funded.funded_deals, funded.total_count, funded.page, funded.per_page);
 ```
+
+Funded deals and stipulations each return one page per call. The sandbox returned
+`total_count`, `page`, and `per_page` alongside `funded_deals` or `stipulations`.
+A page beyond the available results returned an empty array and the same total.
+Funded deals defaulted to 50 per page and accepted up to 200. Stipulations
+accepted 201 in the sandbox. Use the returned page metadata when reading further
+pages.
+
+The sandbox returned individual deals in `listDeals().data.deals` wrapped in a
+`data` object. In a read check, that endpoint returned `per_page: 50` when asked
+for 2. The SDK forwards query parameters and preserves the server response.
 
 ---
 
@@ -242,23 +278,72 @@ await libertasClient.deleteStipulation({
   stipulation_id: '18f1db1e-585f-46fd-8891-d54221209db0',
 });
 
-const allStips = await libertasClient.getAllStipulations({
+const stipulationPage = await libertasClient.getAllStipulations({
   deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
+  page: 2,
+  per_page: 20,
 });
 
-// updateStipulation sends a JSON body; consult the API reference for update fields.
 const updated = await libertasClient.updateStipulation({
   deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
   stipulation_id: '18f1db1e-585f-46fd-8891-d54221209db0',
+  file: createReadStream('./bank_statement_1.pdf'),
+  file_name: 'bank_statement_1.pdf',
+  file_type: 'application/pdf',
   stipulation_type_id: '1',
 });
 ```
 
 ---
 
-For `createDeal` and `createStipulation`, pass a readable stream or Buffer for
-file fields. Strings are sent as literal form values, not opened as files. Create
-a fresh stream for each upload; consumed streams cannot be reused.
+Create and update send multipart form data. For attachments, pass a readable
+stream or Buffer. When supplying a string it becomes a literal form field.
+Create a fresh stream for each upload. The vendor documents updates with a
+replacement file. Sandbox support for metadata-only updates remains unverified.
+
+#### Presigned uploads
+
+The [sandbox reference](https://sandbox.uat.libertasfms.com/api/public/v2/docs/index.html#api-Stipulations-CreateUploadUrl)
+documents a bearer-authenticated JSON POST to
+`/deals/:deal_id/stipulations/upload-url`. It creates a stipulation and returns
+`id`, `upload_url`, `expires_at`, and `upload_headers`. The documented URL lasts
+15 minutes. Send the exact bytes as a raw PUT using the returned signed headers.
+Keep the URL private and use only the signed headers for that PUT. The following
+example buffers a file for clarity. For large files, measure and stream the same
+unchanged file. Sandbox verification covered read operations only, so URL
+issuance and the S3 PUT were not exercised.
+
+```javascript
+import { readFile } from 'node:fs/promises';
+
+const bytes = await readFile('./bank_statement_1.pdf');
+const { data: upload } = await libertasClient.createStipulationUploadUrl({
+  deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
+  stipulation_type_id: '1',
+  file_name: 'bank_statement_1.pdf',
+  file_type: 'application/pdf',
+  file_size: bytes.length,
+});
+const destination = new URL(upload.upload_url);
+if (destination.protocol !== 'https:') throw new Error('Expected an HTTPS upload URL');
+
+const result = await fetch(destination, {
+  method: 'PUT',
+  headers: upload.upload_headers,
+  body: bytes,
+  redirect: 'error',
+});
+if (!result.ok) throw new Error(`Presigned upload failed (HTTP ${result.status})`);
+```
+
+### Identifiers
+
+Path identifiers accept strings and non-negative safe integers in the SDK.
+Pass IDs exactly as returned by Libertas. Use strings for numeric identifiers
+that exceed JavaScript's safe integer range. The current sandbox requires GUID
+deal IDs on the stipulation listing and deal status routes. Vendor examples
+include numeric IDs for older stipulation routes. Numeric acceptance on write
+routes remains unverified.
 
 ### Webhooks
 
@@ -269,9 +354,16 @@ await libertasClient.registerWebhook({
 });
 
 await libertasClient.simulateWebhook({
+  deal_id: '56ba721d-a343-4282-9ea8-9b7fc8d6cef6',
   type: 'status',
 });
 ```
+
+Simulation requires sandbox mode and the official sandbox origin. Supply
+`deal_id` and a webhook `type` such as `status`, `stipulations`, or `offers`.
+The vendor reference disagrees on the singular and plural route spellings.
+The SDK retains `/webhooks/simulate`, which the vendor uses in its example.
+The simulation POST was not exercised during read-only sandbox verification.
 
 ---
 
@@ -304,6 +396,7 @@ repository root after installing development dependencies:
 LIBERTAS_API_KEY=your_key node ./scripts/index.js --endpoint=listDeals
 ```
 
+Pass `--page=2 --per_page=20` to request a specific page from a listing.
 For methods that require identifiers, pass arguments such as `--deal_id=...`,
 `--stipulation_id=...`, or `--offer_id=...`. CLI calls can create or modify sandbox
 records. Review `scripts/index.js` and the sample payloads in `scripts/test-data.js`
@@ -312,8 +405,10 @@ before using write operations.
 ## Contributing
 
 Issues and pull requests are welcome. Include a description of the change and
-run `npm test` before submitting a pull request. Tests use mocked HTTP requests
-and do not require API credentials.
+run `npm test` before submitting a pull request. Unit tests use mocked HTTP
+requests. To opt into the read-only integration test, set
+`LIBERTAS_SANDBOX_API_KEY` and run `node --test test/sandbox.test.js`. It always
+targets the official sandbox origin.
 
 ## Reference
 

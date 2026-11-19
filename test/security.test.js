@@ -31,7 +31,7 @@ test('caller input cannot override HTTP configuration or authentication', async 
         const request = requests.at(-1);
         assert.equal(request.headers.Authorization, 'Bearer session');
         assert.equal(request.baseURL, undefined);
-        assert.ok(request.url.startsWith('https://api.libertasfunding.com/'));
+        assert.ok(request.url.startsWith('https://api.libertasfms.com/'));
         assert.ok(!request.url.includes('?'));
     }
     await new StipTypes(options).getStipulationTypes();

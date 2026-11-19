@@ -42,3 +42,17 @@ test('failed authentication can be retried', async () => {
         http.defaults.adapter = original;
     }
 });
+
+test('authentication accepts the sandbox envelope and documented top-level token', async t => {
+    const original = http.defaults.adapter;
+    t.after(() => { http.defaults.adapter = original; });
+
+    for (const data of [{ success: true, data: { token: 'session' } }, { token: 'session' }]) {
+        http.defaults.adapter = async () => ({ data, status: 200, headers: {} });
+        assert.equal(await new Auth(options).auth(), 'session');
+    }
+    http.defaults.adapter = async () => ({
+        data: { success: false, token: 'session' }, status: 200, headers: {},
+    });
+    await assert.rejects(new Auth(options).auth(), /session token/);
+});
