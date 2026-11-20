@@ -1,5 +1,4 @@
-import { pathSegment, resourceId } from './security.js';
-import axios from './http.js';
+import { appendFormField, pathSegment, resourceId } from './security.js';
 import Auth from './auth.js';
 import FormData from 'form-data';
 
@@ -12,33 +11,32 @@ function stipulationForm(options) {
                 (typeof options.file_type !== 'string' || /[\r\n]/u.test(options.file_type))) {
                 throw new TypeError('file_type must be a single-line MIME type');
             }
-            form.append(name, value, {
+            appendFormField(form, name, value, {
                 filename: options.file_name,
                 contentType: options.file_type,
             });
         } else {
-            form.append(name, value);
+            appendFormField(form, name, value);
         }
     }
     return form;
 }
 
 export default class Stips {
-    constructor(options) {
+    constructor(options, auth = new Auth(options)) {
         this.environment = options.environment;
-        this.auth = new Auth(options);
+        this.auth = auth;
         this.baseUrl = this.auth.baseUrl;
     }
 
     async createStipulation(options) {
         const dealId = pathSegment(options.deal_id);
         const formData = stipulationForm(options);
-        const sessionToken = await this.auth.auth();
-        return axios.post(`${this.baseUrl}/deals/${dealId}/stipulations`, formData, {
-            headers: {
-                Authorization: `Bearer ${sessionToken}`,
-                ...formData.getHeaders(),
-            }
+        return this.auth.request({
+            method: 'post',
+            url: `${this.baseUrl}/deals/${dealId}/stipulations`,
+            data: formData,
+            headers: formData.getHeaders(),
         });
     }
 
@@ -53,30 +51,25 @@ export default class Stips {
             throw new TypeError('file_name and file_type are required');
         }
         const stipulationTypeId = resourceId(stipulation_type_id);
-        const sessionToken = await this.auth.auth();
-        return axios.post(url, { file_name, file_type, file_size, stipulation_type_id: stipulationTypeId }, {
-            headers: {
-                Authorization: `Bearer ${sessionToken}`,
-            }
+        return this.auth.request({
+            method: 'post',
+            url,
+            data: { file_name, file_type, file_size, stipulation_type_id: stipulationTypeId },
         });
     }
 
     async deleteStipulation(options) {
-        const sessionToken = await this.auth.auth();
-        return axios.delete(`${this.baseUrl}/deals/${pathSegment(options.deal_id)}/stipulations/${pathSegment(options.stipulation_id)}`, {
-            headers: {
-                Authorization: `Bearer ${sessionToken}`,
-            }
+        return this.auth.request({
+            method: 'delete',
+            url: `${this.baseUrl}/deals/${pathSegment(options.deal_id)}/stipulations/${pathSegment(options.stipulation_id)}`,
         });
     }
 
     async getAllStipulations(options) {
-        const sessionToken = await this.auth.auth();
-        return axios.get(`${this.baseUrl}/deals/${pathSegment(options.deal_id)}/stipulations`, {
+        return this.auth.request({
+            method: 'get',
+            url: `${this.baseUrl}/deals/${pathSegment(options.deal_id)}/stipulations`,
             params: { page: options.page, per_page: options.per_page },
-            headers: {
-                Authorization: `Bearer ${sessionToken}`,
-            }
         });
     }
 
@@ -87,12 +80,11 @@ export default class Stips {
             throw new TypeError('A stipulation update field is required');
         }
         const formData = stipulationForm(fields);
-        const sessionToken = await this.auth.auth();
-        return axios.put(url, formData, {
-            headers: {
-                Authorization: `Bearer ${sessionToken}`,
-                ...formData.getHeaders(),
-            }
+        return this.auth.request({
+            method: 'put',
+            url,
+            data: formData,
+            headers: formData.getHeaders(),
         });
     }
 }

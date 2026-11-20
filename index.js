@@ -9,18 +9,20 @@ import {
     Webhooks,
 } from './src/index.js';
 
+export { default as LibertasApiError } from './src/api-error.js';
+
 export default class LibertasClient {
     constructor(options) {
         this.masterToken = options.token;
         this.environment = options.environment;
-        this.deals = new Deals(options);
-        this.offers = new Offers(options);
-        this.stips = new Stips(options);
-        this.industries = new Industries(options);
-        this.webhooks = new Webhooks(options);
         this.auth = new Auth(options);
-        this.funded = new Funded(options);
-        this.stipTypes = new StipTypes(options);
+        this.deals = new Deals(options, this.auth);
+        this.offers = new Offers(options, this.auth);
+        this.stips = new Stips(options, this.auth);
+        this.industries = new Industries(options, this.auth);
+        this.webhooks = new Webhooks(options, this.auth);
+        this.funded = new Funded(options, this.auth);
+        this.stipTypes = new StipTypes(options, this.auth);
     }
 
     async createDeal(options) {

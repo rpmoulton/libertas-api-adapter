@@ -12,3 +12,12 @@ export function resourceId(value) {
 export function pathSegment(value) {
     return encodeURIComponent(resourceId(value));
 }
+
+export function appendFormField(form, name, value, options) {
+    try {
+        form.append(name, value, options);
+    } catch {
+        // Multipart builders can embed invalid field values in their errors.
+        throw new TypeError('Invalid multipart form field');
+    }
+}
